@@ -12,11 +12,11 @@ type Props = {
 export function SectionHeader({ number, title, id, kicker, className = '', titleClassName = '' }: Props) {
   return (
     <header className={className}>
-      <p className="label flex items-center gap-3 text-muted">
+      <p data-reveal="fade" className="label flex items-center gap-3 text-muted">
         <span className="text-paper">{number} —</span>
         {kicker && <span>{kicker}</span>}
       </p>
-      <h2 id={id} className={`serif mt-5 md:mt-6 ${titleClassName || 'text-title'}`}>
+      <h2 id={id} data-reveal="lines" className={`serif mt-5 md:mt-6 ${titleClassName || 'text-title'}`}>
         {title}
       </h2>
     </header>

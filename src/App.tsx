@@ -19,6 +19,7 @@ import { Judges } from './sections/Judges'
 import { Partnerships } from './sections/Partnerships'
 import { AboutVoirtales } from './sections/AboutVoirtales'
 import { Final } from './sections/Final'
+import { SiteMotion } from './motion/SiteMotion'
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
       </main>
       <Footer />
       <div className="grain" aria-hidden="true" />
+      <SiteMotion />
     </>
   )
 }

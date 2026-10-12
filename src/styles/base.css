@@ -106,10 +106,6 @@
     outline-offset: 4px;
     border-radius: 2px;
   }
-  /* Sections land below the sticky header when reached by anchor. */
-  section[id] {
-    scroll-margin-top: calc(var(--header-h) + var(--safe-top));
-  }
 }
 
 /* Reusable layout + type primitives */
@@ -212,4 +208,93 @@
 /* Soft halo used behind text over the (later) WebGL canvas, and for rasa accents. */
 .halo {
   background: radial-gradient(closest-side, var(--halo, rgb(242 238 230 / 0.08)), transparent);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Motion support                                                          */
+/* ---------------------------------------------------------------------- */
+
+/* Lenis owns smooth scrolling when it is active. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Masks for line reveals. A little vertical breathing room so caps and italics never clip. */
+.hero-mask {
+  display: block;
+  overflow: clip;
+  padding-block: 0.08em 0.02em;
+  margin-block: -0.08em -0.02em;
+}
+.reveal-line {
+  padding-bottom: 0.04em;
+}
+
+/* Programmatic focus after an anchor jump should not draw a ring around a whole section. */
+[tabindex='-1']:focus {
+  outline: none;
+}
+
+/* Hero scroll cue: a bead of light running down the line. */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue > span {
+    animation: scroll-cue 2.4s var(--ease-out-soft) infinite;
+  }
+}
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+/* Focus words (03): revealed on hover with a fine pointer, or on tap/keyboard via the toggle. */
+.focus-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s var(--ease-out-soft);
+}
+.focus-panel > ul {
+  min-height: 0;
+  overflow: hidden;
+}
+.focus-panel li {
+  opacity: 0;
+  transform: translateY(0.6em);
+  transition:
+    opacity 0.5s var(--ease-out-soft),
+    transform 0.6s var(--ease-out-soft);
+  transition-delay: calc(var(--i) * 45ms);
+}
+[data-focus-open='true'] .focus-panel {
+  grid-template-rows: 1fr;
+}
+[data-focus-open='true'] .focus-panel li {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .focus-card:hover .focus-panel {
+    grid-template-rows: 1fr;
+  }
+  .focus-card:hover .focus-panel li {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .focus-panel,
+  .focus-panel li {
+    transition: none;
+  }
 }

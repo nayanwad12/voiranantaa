@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, Ref } from 'react'
 
 type Props = {
   id?: string
@@ -6,12 +6,13 @@ type Props = {
   scene: string
   labelledBy: string
   className?: string
+  ref?: Ref<HTMLElement>
   children: ReactNode
 }
 
-export function Section({ id, scene, labelledBy, className = '', children }: Props) {
+export function Section({ id, scene, labelledBy, className = '', ref, children }: Props) {
   return (
-    <section id={id} data-scene={scene} aria-labelledby={labelledBy} className={`relative ${className}`}>
+    <section ref={ref} id={id} data-scene={scene} aria-labelledby={labelledBy} className={`relative ${className}`}>
       {children}
     </section>
   )

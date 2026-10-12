@@ -15,9 +15,9 @@ export function Rasas() {
             id="rasas-title"
             titleClassName="text-display"
           />
-          <p className="serif mt-5 text-subheading italic text-paper/90">{firstEdition.subtitle}</p>
+          <p data-reveal="fade" className="serif mt-5 text-subheading italic text-paper/90">{firstEdition.subtitle}</p>
         </div>
-        <div className="col-span-4 space-y-6 text-lead text-paper/85 md:col-span-5 md:col-start-8 md:self-end">
+        <div data-reveal="stagger" className="col-span-4 space-y-6 text-lead text-paper/85 md:col-span-5 md:col-start-8 md:self-end">
           {firstEdition.body.map((p) => (
             <p key={p}>{p}</p>
           ))}
@@ -25,8 +25,8 @@ export function Rasas() {
       </div>
 
       <div className="container-x">
-        <p className="label mb-6 text-muted">{firstEdition.rasasIntro}</p>
-        <ol className="border-t border-hairline">
+        <p data-reveal="fade" className="label mb-6 text-muted">{firstEdition.rasasIntro}</p>
+        <ol data-reveal="stagger" className="border-t border-hairline">
           {rasas.map((rasa, i) => (
             <li
               key={rasa.key}
@@ -49,7 +49,7 @@ export function Rasas() {
       </div>
 
       <div className="container-x section-y">
-        <p className="serif text-display uppercase">
+        <p data-reveal="lines" className="serif text-display uppercase">
           {firstEdition.statement.map((line, i) => (
             <span key={line} className={`block ${['', 'md:pl-[0.75em]', 'italic md:pl-[1.5em]'][i]}`}>
               {line}

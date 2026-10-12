@@ -10,7 +10,7 @@ export function Accordion({ items }: { items: readonly Item[] }) {
   const base = useId()
 
   return (
-    <ol className="border-t border-hairline">
+    <ol data-reveal="stagger" className="border-t border-hairline">
       {items.map((item, i) => {
         const num = <span className="label w-8 shrink-0 text-muted md:w-auto">{String(i + 1).padStart(2, '0')}</span>
         if (wide) {

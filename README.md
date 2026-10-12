@@ -2,7 +2,7 @@
 
 The official website for **VOIR ANANTA**, an annual wearable-art competition and live experience by **VOIRTALES**.
 
-Built with Vite, React, TypeScript and Tailwind CSS v4. The 3D thread (three.js / React Three Fiber), GSAP + ScrollTrigger and Lenis are added in later build phases. The full brief is in [`docs/BRIEF.md`](docs/BRIEF.md).
+Built with Vite, React, TypeScript and Tailwind CSS v4, with GSAP + ScrollTrigger and Lenis for motion. The 3D thread (three.js / React Three Fiber) is added in later build phases. The full brief is in [`docs/BRIEF.md`](docs/BRIEF.md).
 
 ## Getting started
 
@@ -20,6 +20,7 @@ These need `npm run preview -- --port 4173` running in another terminal.
 ```bash
 npm run check:layout          # screenshots 360…1920 + phone landscape into screenshots/, fails on horizontal overflow
 npm run check:content         # every line of brief §4 must appear on the rendered page
+npm run check:motion          # reveals reverse, anchors land under the header, menu, reduced motion
 npm run og                    # regenerate the placeholder share image public/og-image.png
 ```
 
@@ -51,9 +52,16 @@ src/
   components/layout/  Header, MobileMenu, SkipLink, Footer
   components/ui/      small shared pieces (RegisterButton, SectionHeader, Marquee, Accordion, …)
   sections/           one component per section, in page order
+  motion/             GSAP setup, Lenis smooth scroll + anchor handling, data-reveal scroll reveals
 scripts/              layout, content and OG-image scripts (Playwright)
 docs/BRIEF.md         the project brief
 ```
+
+## Motion
+
+- Smooth scrolling (Lenis) is used only with a mouse or trackpad. Touch devices keep native scrolling.
+- Text reveals are declared in markup with `data-reveal="lines" | "fade" | "stagger"` (see `src/motion/reveals.ts`). They play on the way down and reverse on the way back up.
+- With `prefers-reduced-motion`, there is no smooth scroll, no split text and no reveals: the page is simply all there.
 
 ## Fonts
 

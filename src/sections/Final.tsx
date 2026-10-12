@@ -14,10 +14,10 @@ export function Final() {
         <InfinityMark className="w-[min(130vw,80rem)] text-paper/15" />
       </div>
       <div className="container-x flex flex-col items-center text-center">
-        <h2 id="final-title" className="serif text-statement uppercase">
+        <h2 id="final-title" data-reveal="lines" className="serif text-statement uppercase">
           {final.question}
         </h2>
-        <div className="mt-12 flex flex-col items-center gap-3 md:mt-16">
+        <div data-reveal="stagger" className="mt-12 flex flex-col items-center gap-3 md:mt-16">
           <p className="serif text-heading">{final.name}</p>
           <p className="label text-paper">{final.edition}</p>
           <p className="serif text-subheading italic">{final.tagline}</p>

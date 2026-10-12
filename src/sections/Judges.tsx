@@ -9,14 +9,14 @@ export function Judges() {
     <Section id="judges" scene="judges" labelledBy="judges-title">
       <div className="container-x section-y grid-editorial gap-y-12">
         <SectionHeader number={judges.number} title={judges.title} id="judges-title" className="col-span-4 md:col-span-12" />
-        <p className="serif col-span-4 text-display uppercase md:col-span-11">{judges.statement}</p>
+        <p data-reveal="lines" className="serif col-span-4 text-display uppercase md:col-span-11">{judges.statement}</p>
 
         <div className="col-span-4 md:col-span-6">
-          <p className="text-lead text-paper/85">{judges.intro}</p>
+          <p data-reveal="fade" className="text-lead text-paper/85">{judges.intro}</p>
           <TagList items={judges.fields} size="md" className="mt-6" />
         </div>
 
-        <div className="col-span-4 flex flex-col items-start justify-between gap-10 border border-hairline p-6 sm:p-10 md:col-span-5 md:col-start-8">
+        <div data-reveal="fade" className="col-span-4 flex flex-col items-start justify-between gap-10 border border-hairline p-6 sm:p-10 md:col-span-5 md:col-start-8">
           <InfinityMark className="w-16 text-muted" />
           <p className="serif text-heading italic">{judges.note}</p>
         </div>

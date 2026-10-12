@@ -50,7 +50,16 @@ for (const vp of viewports) {
       const r = el.getBoundingClientRect()
       if (r.width === 0) continue
       // Ignore things that are meant to bleed: the marquee and decorative (aria-hidden) art.
-      const clipped = !!el.closest('.marquee, [aria-hidden="true"], #mobile-menu[hidden]')
+      let clipped = !!el.closest('.marquee, [aria-hidden="true"], #mobile-menu[hidden]')
+      // Also fine: content clipped by an ancestor that itself sits inside the viewport.
+      for (let p = el.parentElement; !clipped && p && p !== document.body; p = p.parentElement) {
+        const o = getComputedStyle(p).overflowX
+        if (o === 'hidden' || o === 'clip') {
+          const pr = p.getBoundingClientRect()
+          if (pr.left >= -0.5 && pr.right <= vw + 0.5) clipped = true
+          break
+        }
+      }
       // Text that spills out of its own box (e.g. a huge word in a narrow column).
       const spills = !clipped && !el.closest('.sr-only, .sr-only-focusable') && el.children.length === 0 && el.textContent.trim() && el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).display !== 'inline'
       if (spills) offenders.push(`text spill: "${el.textContent.trim().slice(0, 40)}" (${el.scrollWidth} > ${el.clientWidth})`)

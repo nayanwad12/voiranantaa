@@ -1,6 +1,8 @@
 import { lenses } from '../content/site'
 import { Section } from '../components/ui/Section'
 import { SectionHeader } from '../components/ui/SectionHeader'
+import { useRef } from 'react'
+import { gsap, MOTION_OK, REVERSIBLE, useGSAP } from '../motion/gsap'
 
 /**
  * Six lenses. Stacked on phones, 2-up on tablets, arranged on a ring on desktop (lg+).
@@ -8,16 +10,31 @@ import { SectionHeader } from '../components/ui/SectionHeader'
  */
 export function Lenses() {
   const n = lenses.items.length
+  const ring = useRef<HTMLDivElement>(null)
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add(MOTION_OK, () => {
+        gsap
+          .timeline({ scrollTrigger: { trigger: ring.current, start: 'top 75%', toggleActions: REVERSIBLE } })
+          .from('[data-lens-ring]', { scale: 0.85, opacity: 0, duration: 1.4, ease: 'expo.out' })
+          .from('[data-lens]', { opacity: 0, y: 24, duration: 0.9, stagger: 0.1 }, 0.15)
+          .from('[data-lens-intro]', { opacity: 0, duration: 1 }, 0.5)
+      })
+      return () => mm.revert()
+    },
+    { scope: ring },
+  )
   return (
     <Section id="lenses" scene="lenses" labelledBy="lenses-title">
       <div className="container-x section-y">
         <SectionHeader number={lenses.number} title={lenses.title} id="lenses-title" />
-        <p className="mt-8 max-w-[34rem] text-lead text-paper/85 lg:hidden">{lenses.intro}</p>
+        <p data-reveal="fade" className="mt-8 max-w-[34rem] text-lead text-paper/85 lg:hidden">{lenses.intro}</p>
 
-        <div className="relative mt-12 lg:mx-auto lg:mt-16 lg:aspect-[1.35] lg:max-w-[76rem]">
+        <div ref={ring} className="relative mt-12 lg:mx-auto lg:mt-16 lg:aspect-[1.35] lg:max-w-[76rem]">
           {/* Ring + centre text, desktop only */}
-          <div aria-hidden="true" className="absolute inset-[10%_17%] hidden rounded-[50%] border border-hairline-strong lg:block" />
-          <p className="absolute top-1/2 left-1/2 hidden w-[22rem] -translate-x-1/2 -translate-y-1/2 text-center text-lead text-paper/85 lg:block">
+          <div data-lens-ring aria-hidden="true" className="absolute inset-[10%_17%] hidden rounded-[50%] border border-hairline-strong lg:block" />
+          <p data-lens-intro className="absolute top-1/2 left-1/2 hidden w-[22rem] -translate-x-1/2 -translate-y-1/2 text-center text-lead text-paper/85 lg:block">
             {lenses.intro}
           </p>
 
@@ -27,6 +44,7 @@ export function Lenses() {
               return (
                 <li
                   key={lens.name}
+                  data-lens
                   style={{
                     ['--x' as string]: `${50 + Math.cos(angle) * 33}%`,
                     ['--y' as string]: `${50 + Math.sin(angle) * 40}%`,

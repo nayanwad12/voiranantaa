@@ -9,8 +9,8 @@ export function Participate() {
       <div className="section-y">
         <div className="container-x grid-editorial gap-y-10">
           <SectionHeader number={participate.number} title={participate.title} id="participate-title" className="col-span-4 md:col-span-12" />
-          <p className="serif col-span-4 text-display uppercase md:col-span-11">{participate.statement}</p>
-          <p className="col-span-4 text-lead text-paper/85 md:col-span-6">{participate.eligibility}</p>
+          <p data-reveal="lines" className="serif col-span-4 text-display uppercase md:col-span-11">{participate.statement}</p>
+          <p data-reveal="fade" className="col-span-4 text-lead text-paper/85 md:col-span-6">{participate.eligibility}</p>
         </div>
 
         <div className="mt-14 border-y border-hairline md:mt-20">
@@ -18,7 +18,7 @@ export function Participate() {
         </div>
 
         <div className="container-x mt-10">
-          <p className="text-lead text-muted">{participate.closing}</p>
+          <p data-reveal="fade" className="text-lead text-muted">{participate.closing}</p>
         </div>
       </div>
     </Section>
