@@ -298,3 +298,124 @@ html.lenis body {
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------------- */
+/* Stage: CSS backdrop (fallback look) + WebGL canvas                      */
+/* ---------------------------------------------------------------------- */
+
+.stage-backdrop,
+.stage-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.stage-backdrop {
+  background:
+    radial-gradient(70% 55% at 50% -12%, rgb(242 238 230 / 0.06), transparent 70%),
+    radial-gradient(55% 45% at 85% 105%, rgb(242 238 230 / 0.035), transparent 70%);
+  transition: opacity 1.4s var(--ease-out-soft);
+}
+.stage-canvas {
+  height: 100lvh;
+  opacity: 0;
+  transition: opacity 1.6s var(--ease-out-soft);
+}
+html[data-3d='ready'] .stage-canvas {
+  opacity: 1;
+}
+html[data-3d='ready'] .stage-backdrop {
+  opacity: 0;
+}
+/* The drawn SVG loops stand in for the thread until it arrives, and in fallback mode. */
+.static-art {
+  transition: opacity 1.4s var(--ease-out-soft);
+}
+html[data-3d='ready'] .static-art {
+  opacity: 0;
+}
+/* Over the live thread, a soft ink shadow keeps every line of text crisp and AA-legible. */
+html[data-3d='ready'] main {
+  text-shadow:
+    0 0 1px rgb(10 10 10 / 0.9),
+    0 1px 16px rgb(10 10 10 / 0.85);
+}
+.stage-loader {
+  position: fixed;
+  left: max(var(--gutter), env(safe-area-inset-left));
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 40;
+  pointer-events: none;
+  animation: loader-breathe 2.4s ease-in-out infinite;
+}
+@keyframes loader-breathe {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* 02 — The nine rasas                                                     */
+/* ---------------------------------------------------------------------- */
+
+/* Phones, tablets, reduced motion: nine full-height panels that snap into place. */
+.rasa-panels > li {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: max(14svh, 5rem);
+  scroll-snap-align: start;
+}
+.rasa-panels > li::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 6svh;
+  right: -28vmin;
+  width: 95vmin;
+  height: 95vmin;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rasa) 30%, transparent), transparent);
+  pointer-events: none;
+}
+html[data-3d='ready'] .rasa-panels > li::before {
+  opacity: 0.45;
+}
+/* Snap only with native scrolling (Lenis and CSS snap don't mix). */
+html:not(.lenis):has(.rasa-panels) {
+  scroll-snap-type: y proximity;
+}
+
+/* Desktop: one pinned stage; the nine panels cross-fade as the visitor scrolls. */
+.rasa-stage {
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  overflow: clip;
+}
+.rasa-stage::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: -10vw;
+  width: 70vw;
+  height: 70vw;
+  translate: 0 -50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rasa-active, #f2eee6) 26%, transparent), transparent);
+  transition: background 0.8s linear;
+  pointer-events: none;
+}
+html[data-3d='ready'] .rasa-stage::before {
+  opacity: 0.3;
+}
+.rasa-stage__list > li {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 16svh;
+  will-change: opacity, transform;
+}

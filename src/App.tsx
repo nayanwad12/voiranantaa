@@ -20,11 +20,13 @@ import { Partnerships } from './sections/Partnerships'
 import { AboutVoirtales } from './sections/AboutVoirtales'
 import { Final } from './sections/Final'
 import { SiteMotion } from './motion/SiteMotion'
+import { Stage } from './components/layout/Stage'
 
 export default function App() {
   return (
     <>
       <SkipLink />
+      <Stage />
       <Header />
       <main id="main" tabIndex={-1} className="relative z-10 outline-none">
         <Hero />

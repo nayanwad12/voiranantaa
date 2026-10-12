@@ -14,6 +14,7 @@ export function initLenis(): () => void {
 
   lenis = new Lenis({ duration: 1.15, smoothWheel: true, autoRaf: false })
   lenis.on('scroll', ScrollTrigger.update)
+  if (new URLSearchParams(location.search).has('debug')) Object.assign(window, { __lenis: lenis })
   const tick = (time: number) => lenis?.raf(time * 1000)
   gsap.ticker.add(tick)
   gsap.ticker.lagSmoothing(0)

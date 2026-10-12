@@ -46,7 +46,7 @@ export function Hero() {
       className="relative isolate flex min-h-[100svh] flex-col overflow-hidden pt-[calc(var(--header-h)+var(--safe-top))]"
     >
       {/* Static ∞ — drawn on load; shown until (or instead of) the WebGL thread. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+      <div aria-hidden="true" className="static-art pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
         <div className="halo absolute h-[70vmin] w-[120vmin] [--halo:rgb(242_238_230/0.06)]" />
         <InfinityMark data-hero-loop className="w-[min(118vw,72rem)] text-paper/25" strokeWidth={1} />
       </div>

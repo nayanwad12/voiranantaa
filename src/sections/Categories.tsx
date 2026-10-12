@@ -43,7 +43,7 @@ function CategoryCard({ cat }: { cat: Category }) {
     <article
       aria-labelledby={`cat-${cat.key}`}
       data-focus-open={open}
-      className="focus-card flex flex-col gap-8 bg-ink p-6 sm:p-10 lg:min-h-[38rem] lg:p-14"
+      className="focus-card flex flex-col gap-8 bg-ink/35 p-6 sm:p-10 lg:min-h-[38rem] lg:p-14"
     >
       <div data-reveal="fade" className="flex items-start justify-between gap-6">
         <p className="label text-muted">{cat.kind}</p>
@@ -99,7 +99,7 @@ export function Categories() {
       <div className="container-x section-y">
         <SectionHeader number={categories.number} title={categories.title} id="categories-title" />
 
-        <div className="mt-12 grid gap-px bg-hairline md:mt-16 md:grid-cols-2">
+        <div className="mt-12 grid divide-y divide-hairline border border-hairline md:mt-16 md:grid-cols-2 md:divide-x md:divide-y-0">
           {categories.items.map((cat) => (
             <CategoryCard key={cat.key} cat={cat} />
           ))}

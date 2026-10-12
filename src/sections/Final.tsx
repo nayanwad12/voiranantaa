@@ -10,7 +10,7 @@ export function Final() {
       aria-labelledby="final-title"
       className="relative isolate flex min-h-[100svh] items-center overflow-hidden py-24"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+      <div aria-hidden="true" className="static-art pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
         <InfinityMark className="w-[min(130vw,80rem)] text-paper/15" />
       </div>
       <div className="container-x flex flex-col items-center text-center">

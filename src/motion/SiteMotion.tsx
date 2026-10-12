@@ -9,6 +9,9 @@ export function SiteMotion() {
     const stopLenis = initLenis()
     const stopAnchors = installAnchorHandling()
     // Line breaks change when the web fonts arrive; re-measure every trigger once they have.
+    // Triggers were created top-down per component; sort so the rasa pin is accounted for first.
+    ScrollTrigger.sort()
+    ScrollTrigger.refresh()
     document.fonts?.ready.then(() => ScrollTrigger.refresh())
     return () => {
       stopAnchors()
