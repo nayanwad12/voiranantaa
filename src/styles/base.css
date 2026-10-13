@@ -62,6 +62,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     scroll-padding-top: calc(var(--header-h) + var(--safe-top));
+    overflow-x: hidden; /* Safari < 16 */
     overflow-x: clip;
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -79,6 +80,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden; /* Safari < 16 */
     overflow-x: clip;
   }
   ::selection {
@@ -229,6 +231,7 @@ html.lenis body {
 /* Masks for line reveals. A little vertical breathing room so caps and italics never clip. */
 .hero-mask {
   display: block;
+  overflow: hidden; /* Safari < 16 */
   overflow: clip;
   padding-block: 0.08em 0.02em;
   margin-block: -0.08em -0.02em;

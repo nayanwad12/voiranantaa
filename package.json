@@ -11,7 +11,8 @@
     "check:layout": "node scripts/check-layout.mjs",
     "check:content": "node scripts/check-content.mjs",
     "check:motion": "node scripts/check-motion.mjs",
-    "og": "node scripts/og-image.mjs"
+    "og": "node scripts/og-image.mjs",
+    "check:a11y": "node scripts/check-a11y.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -25,6 +26,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",

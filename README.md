@@ -21,6 +21,7 @@ These need `npm run preview -- --port 4173` running in another terminal.
 npm run check:layout          # screenshots 360…1920 + phone landscape into screenshots/, fails on horizontal overflow
 npm run check:content         # every line of brief §4 must appear on the rendered page
 npm run check:motion          # reveals reverse, anchors, menu, reduced motion, and the 3D scene (loads, pins, reverses)
+npm run check:a11y            # axe-core (WCAG 2.2 AA) on desktop, phone, open menu, reduced motion + keyboard walk-through
 npm run og                    # regenerate the placeholder share image public/og-image.png
 ```
 
@@ -37,7 +38,7 @@ Everything still waiting on real material is a named constant. Change it in one 
 
 Other open items:
 - **Event structured data (JSON-LD):** intentionally left out until the show dates are confirmed. There is a `TODO` in `index.html`.
-- **Canonical URL / `og:url`:** add them once the production domain is known. There is a `TODO` in `index.html`.
+- **Site URL:** set `VITE_SITE_URL` (e.g. `https://voirananta.com`) in Vercel → Project → Settings → Environment Variables once you have a domain. It makes the share image, canonical link and `og:url` absolute, and adds `sitemap.xml`. Until then, Vercel's own production domain is used automatically.
 
 ## Editing content
 
@@ -88,6 +89,39 @@ One fixed WebGL canvas sits behind the page and never unmounts. One glowing thre
 - Rendering pauses when the tab is hidden and runs at about 30 fps in calm sections.
 - If the frame rate stays under 40 fps for about 3 s, the site steps down one tier, and a lost WebGL context falls back to CSS.
 - To test a tier: add `?tier=high`, `?tier=medium`, `?tier=low` or `?tier=fallback` to the URL. A forced tier never steps down. `?debug` exposes `window.__scene` and `window.__lenis`.
+
+## Deploying (Vercel)
+
+The repository is ready for Vercel with zero configuration (`vercel.json` sets the build, caching and security headers).
+
+1. Go to [vercel.com/new](https://vercel.com/new) and import the GitHub repository `nayanwad12/voiranantaa`.
+2. Framework preset: **Vite** (detected). Build command `npm run build`, output `dist` (both preset in `vercel.json`).
+3. Choose the branch to deploy as production (for example after merging into `main`). Every other pushed branch gets its own preview URL automatically.
+4. Optional: add `VITE_SITE_URL` (see above) and a custom domain.
+
+`npm run build` type-checks, builds, then prerenders the page to static HTML (`scripts/prerender.mjs`), so every word of copy is in the HTML before any JavaScript runs.
+
+## Performance and audit results
+
+Measured with Lighthouse 13 against the production build. Mobile runs with simulated 4G and a 4× slower CPU.
+
+| | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| Mobile | 98 | 100 | 100 | 100 |
+| Desktop | 100 | 100 | 100 | 100 |
+
+- **Mobile vitals:** LCP 2.2 s, TBT ≈ 70 ms, CLS 0.
+- **Scrolling at phone size:** 60 fps, even with a 4× throttled CPU.
+- **Prerendering:** the page is prerendered, and the hero intro is pure CSS.
+- **Lazy setup:** scroll animations are set up lazily in idle time (`src/motion/arm.ts`). The 3D chunk loads only after the page has loaded, and the bloom chunk only on the high tier.
+
+## Browser support
+
+The target is current evergreen browsers: Chrome, Edge and Samsung Internet (Chromium 111+), Safari 16.4+ (macOS and iOS), and Firefox 128+. Tailwind CSS v4 sets this baseline.
+
+Older browsers still get readable content, with simpler styling and no 3D. Features that are only progressive enhancements, such as `text-wrap: balance`, `color-mix()` glows, and snap points via `:has()`, are simply skipped where unsupported. `overflow: clip` has an `overflow: hidden` fallback.
+
+Automated checks run in Chromium (this build environment has no Firefox or WebKit). Before launch, do a manual pass on Safari (iPhone and Mac), Firefox and Samsung Internet.
 
 ## Fonts
 
