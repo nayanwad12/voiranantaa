@@ -7,10 +7,11 @@ import { dropTier, type Tier } from '../quality/tier'
 import { TIER_CONFIG, type TierConfig } from './config'
 import { Director } from './Director'
 import { F, live } from './state'
-import { Thread } from './thread/Thread'
+import { Particles } from './particles/Particles'
+import { Background } from './Background'
 import { Fragments } from './moments/Fragments'
 import { Plinth } from './moments/Plinth'
-import { FinalistLights, TimelineBeads } from './moments/Points'
+import { Beads } from './moments/Beads'
 
 const Effects = lazy(() => import('./Effects'))
 
@@ -26,11 +27,11 @@ export default function Experience({ tier, onReady }: Props) {
   return (
     <Canvas
       frameloop="demand"
+      flat
       dpr={cfg.dpr}
       gl={{ antialias: cfg.antialias, alpha: false, powerPreference: 'high-performance', stencil: false }}
       camera={{ fov: 45, near: 0.1, far: 120, position: [0, 0, 8] }}
-      onCreated={({ scene, gl }) => {
-        scene.background = new THREE.Color('#0A0A0A')
+      onCreated={({ gl }) => {
         gl.domElement.addEventListener('webglcontextlost', (e) => {
           e.preventDefault()
           // Losing the context is a strong hint the device is struggling: use the CSS fallback.
@@ -38,16 +39,16 @@ export default function Experience({ tier, onReady }: Props) {
         })
       }}
     >
-      <Director count={cfg.points} />
+      <Director />
+      <Background octaves={cfg.octaves} />
       <Lights />
-      <Thread cfg={cfg} />
+      <Particles count={cfg.particles} />
       <Fragments detail={cfg.fragmentDetail} />
       <Plinth />
-      <FinalistLights />
-      <TimelineBeads />
-      {cfg.bloom && (
+      <Beads />
+      {cfg.post !== 'none' && (
         <Suspense fallback={null}>
-          <Effects />
+          <Effects full={cfg.post === 'full'} />
         </Suspense>
       )}
       <Driver onReady={onReady} />
@@ -71,8 +72,8 @@ function Lights() {
   }, [scene, gl])
   const rim = useRef<THREE.PointLight>(null)
   useFrame(() => {
-    const s = live.state
-    rim.current?.color.setRGB(s[F.r], s[F.g], s[F.b], THREE.SRGBColorSpace)
+    const s = live.cur.s
+    rim.current?.color.setRGB(s[F.c2r], s[F.c2g], s[F.c2b], THREE.SRGBColorSpace)
   })
   return (
     <>
@@ -92,17 +93,15 @@ function Driver({ onReady }: { onReady: () => void }) {
     const tick = () => {
       if (document.hidden) return
       frame++
-      const s = live.state
-      // Calm stretches (dim thread, no moments) only need ~30 fps.
-      const calm = s[F.speed] < 0.6 || (s[F.thread] < 0.45 && s[F.fragments] < 0.02 && s[F.lights] < 0.02 && s[F.beads] < 0.02)
-      if (calm && frame % 2) return
+      // The quiet chapter (05, colour drained) only needs ~30 fps.
+      if (live.cur.s[F.mono] > 0.9 && frame % 2) return
       invalidate()
     }
     gsap.ticker.add(tick)
     return () => gsap.ticker.remove(tick)
   }, [invalidate])
   useFrame(() => {
-    if (!announced.current && live.ready) {
+    if (!announced.current && live.smooth >= 0) {
       announced.current = true
       requestAnimationFrame(onReady)
     }

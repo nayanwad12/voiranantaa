@@ -66,27 +66,41 @@ docs/BRIEF.md         the project brief
 - Text reveals are declared in markup with `data-reveal="lines" | "fade" | "stagger"` (see `src/motion/reveals.ts`). They play on the way down and reverse on the way back up.
 - With `prefers-reduced-motion`, there is no smooth scroll, no split text and no reveals: the page is simply all there.
 
-## The 3D thread
+## The 3D story
 
-One fixed WebGL canvas sits behind the page and never unmounts. One glowing thread runs through it: it starts as ∞, unravels, travels through the nine rasas, becomes material, a stage and a timeline, then closes back into ∞.
+One fixed WebGL canvas sits behind the page and never unmounts. A field of up to 140 000 particles tells the story of the edition as you scroll. Every form is computed on the GPU, and the particles migrate between forms in staggered waves through swirling currents.
 
-- **`three/thread/shapes.ts`** holds the thread's vocabulary: ∞, line, the nine rasa behaviours, knot (FORM), waveform (VOICE), halo, horizon, ring, vertical (timeline), weave. Every shape maps t ∈ [0, 1] to a point, so any two blend point-by-point.
-- **`three/choreography.ts`** is the scroll map. Each section (`data-scene="…"` in the markup) lists keyframes at its local progress: shape, camera, colour, glow, and which moments are visible (fragments, plinth, lights, beads).
-- **`three/state.ts`** turns the keyframes into one track in scroll pixels. The `Director` resolves the current scroll position each frame and eases toward it. Everything is a function of scroll, so it all reverses exactly on scroll-up.
-- **Moments:** `three/moments/` holds the 100 fragments (95 + 5, from the `FRAGMENTS` constant), the plinth and spotlight, the 20 lights and the timeline beads.
-- **The nine rasas:** `sections/Rasas.tsx` pins a stage on desktop (fine pointer, motion allowed). Everywhere else it shows nine full-height panels that snap into place, each with its own rasa light.
+| Chapter | Section | What happens |
+|---|---|---|
+| Prologue | Hero | A single note of light (the *bindu*) blooms into the ∞, a flowing ribbon: the raga with no end |
+| Act I | 01 | The ∞ tears apart and re-weaves itself as a gown: wearable art |
+| Act II | 02 | Nine emotional worlds, each with its own colour and living form: lotus, bubbles, rain, burst, flame, shiver and lightning, knot, galaxy, still water |
+| Act III | 03 | RAGA / FORM, an iridescent sculpture; RAGA / VOICE, concentric sound waves |
+| Act IV | 04 | Matter: exactly 100 iridescent fragments (95 + 5, from `FRAGMENTS`) |
+| Act V | 05 | The human hand: the colour drains to black and white, one quiet line |
+| Act VI | 06 | The stage: the gown returns on the plinth under a spotlight |
+| Act VII | 07–09 | A river of light, then 20 stars with 2 flaring winners, then six lenses as an orbiting astrolabe |
+| Act VIII | 10 | The journey: a double helix the camera descends, a bead lighting at each date |
+| Coda | 13–Final | Footlights on a stage arc, a woven fabric, and the return to ∞ |
+
+- **`three/particles/shapes.ts`:** the forms, as GLSL functions. Each maps a particle's random seed to a position and a colour tone, so any two forms morph into each other.
+- **`three/choreography.ts`:** the screenplay. For each section (`data-scene="…"`) it holds keyframes for the form, the particle palette, the aurora background, the camera and the effects.
+- **`three/state.ts`:** builds the keyframes into one track in scroll pixels. The `Director` eases toward the scroll position each frame, so everything reverses exactly on scroll-up.
+- **`three/Background.tsx`:** the living aurora, kept deep so white text always reads.
+- **`three/Effects.tsx`:** bloom, chromatic aberration, film grain and vignette.
+- **Interaction:** particles part around the cursor, the camera has gentle cursor parallax, and fast scrolling stirs the field and widens the chromatic aberration.
 
 ### Quality tiers
 
 | Tier | Who | What |
 |---|---|---|
-| high | desktop, capable GPU | 600-point thread, 4 000 particles, bloom, dpr ≤ 2 |
-| medium | tablets, integrated GPUs | 400 points, 1 500 particles, no bloom, dpr ≤ 1.5 |
-| low | phones | 180 points, 400 particles, no post-processing, dpr ≤ 1.5 |
-| fallback | no WebGL, reduced motion, software GPU, Save-Data, ≤ 2 GB / ≤ 2 cores | no canvas: CSS light in the rasa colours, the drawn ∞ |
+| high | desktop, capable GPU | 140 000 particles, bloom + chromatic aberration + grain + vignette, dpr ≤ 2 |
+| medium | tablets, integrated GPUs | 60 000 particles, bloom, dpr ≤ 1.5 |
+| low | phones | 18 000 particles, no post-processing, dpr ≤ 1.5 |
+| fallback | no WebGL, reduced motion, software GPU, Save-Data, ≤ 2 GB / ≤ 2 cores | no canvas: a slow CSS aurora in the prologue colours, rasa light per panel, the drawn ∞ |
 
 - The 3D chunk is fetched only after the page has loaded, and fades in. A tiny breathing ∞ appears bottom-left if it takes longer than about 1 s.
-- Rendering pauses when the tab is hidden and runs at about 30 fps in calm sections.
+- Rendering pauses when the tab is hidden and runs at about 30 fps in the quiet black-and-white chapter.
 - If the frame rate stays under 40 fps for about 3 s, the site steps down one tier, and a lost WebGL context falls back to CSS.
 - To test a tier: add `?tier=high`, `?tier=medium`, `?tier=low` or `?tier=fallback` to the URL. A forced tier never steps down. `?debug` exposes `window.__scene` and `window.__lenis`.
 
@@ -107,10 +121,10 @@ Measured with Lighthouse 13 against the production build. Mobile runs with simul
 
 | | Performance | Accessibility | Best Practices | SEO |
 |---|---|---|---|---|
-| Mobile | 98 | 100 | 100 | 100 |
+| Mobile | 97 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
-- **Mobile vitals:** LCP 2.2 s, TBT ≈ 70 ms, CLS 0.
+- **Mobile vitals:** LCP 2.3 s, TBT ≈ 50 ms, CLS 0.
 - **Scrolling at phone size:** 60 fps, even with a 4× throttled CPU.
 - **Prerendering:** the page is prerendered, and the hero intro is pure CSS.
 - **Lazy setup:** scroll animations are set up lazily in idle time (`src/motion/arm.ts`). The 3D chunk loads only after the page has loaded, and the bloom chunk only on the high tier.

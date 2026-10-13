@@ -19,7 +19,9 @@ export function Plinth() {
         vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
       fragmentShader: `uniform float uOpacity; uniform vec3 uColor; varying float vH; varying vec3 vN; varying vec3 vV;
         void main(){ float facing = pow(abs(dot(vN, vV)), 2.0); float a = uOpacity * facing * (0.18 + 0.82 * smoothstep(0.0, 1.0, vH)) * 0.16;
-        gl_FragColor = vec4(uColor, a); }`,
+        gl_FragColor = vec4(uColor, a);
+        #include <colorspace_fragment>
+        }`,
       transparent: true,
       depthWrite: false,
       side: THREE.DoubleSide,
@@ -32,7 +34,9 @@ export function Plinth() {
       uniforms: { uOpacity: { value: 0 } },
       vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
       fragmentShader: `uniform float uOpacity; varying vec2 vUv; void main(){ float d = length(vUv - 0.5) * 2.0;
-        gl_FragColor = vec4(vec3(0.95,0.93,0.9), uOpacity * 0.35 * pow(1.0 - smoothstep(0.0, 1.0, d), 2.0)); }`,
+        gl_FragColor = vec4(vec3(0.95,0.93,0.9), uOpacity * 0.35 * pow(1.0 - smoothstep(0.0, 1.0, d), 2.0));
+        #include <colorspace_fragment>
+        }`,
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
@@ -62,7 +66,7 @@ export function Plinth() {
   )
 
   useFrame(() => {
-    const k = live.state[F.plinth]
+    const k = live.cur.s[F.plinth]
     parts.group.visible = k > 0.002
     if (!parts.group.visible) return
     parts.plinthMat.opacity = Math.min(1, k * 1.5)

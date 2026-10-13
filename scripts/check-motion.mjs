@@ -113,27 +113,13 @@ await browser.close()
     return el.getBoundingClientRect().height / innerHeight
   })
   check(pinned > 7, `3d: rasa journey is pinned on desktop (${pinned.toFixed(1)} screens of scroll)`)
-  const snap = () =>
-    p.evaluate(() => {
-      const { live } = window.__scene
-      // state layout: 21 scalars (camZ is #2), then one weight per shape; ∞ is the first shape.
-      return { inf: live.state[21], camZ: live.state[2], scroll: Math.round(scrollY) }
-    })
+  // Scene state: the shape pair being morphed (∞ is shape 1) and the camera distance.
+  const snap = () => p.evaluate(() => window.__scene.debug())
   const settle = async (y) => {
     await p.evaluate((y) => window.__lenis.scrollTo(y, { immediate: true, force: true }), y)
-    // Wait for a few rendered frames so the target reflects the new position, then for the ease to settle.
-    const t0 = await p.evaluate(() => window.__scene.live.time)
-    await p.waitForFunction((t0) => window.__scene.live.time > t0 + 0.2, t0, { timeout: 20000 })
-    for (let i = 0; i < 40; i++) {
-      await p.waitForTimeout(500)
-      const d = await p.evaluate(() => {
-        const { live } = window.__scene
-        let m = 0
-        for (let i = 0; i < live.state.length; i++) m = Math.max(m, Math.abs(live.state[i] - live.target[i]))
-        return m
-      })
-      if (d < 0.01) break
-    }
+    // The scene eases toward the scroll position; wait until it has caught up.
+    await p.waitForFunction(() => Math.abs(window.__scene.live.smooth - window.scrollY) < 1, null, { timeout: 60000 })
+    await p.waitForTimeout(500)
   }
   await settle(0)
   const top = await snap()
@@ -141,8 +127,9 @@ await browser.close()
   const mid = await snap()
   await settle(0)
   const back = await snap()
-  check(top.inf > 0.95 && mid.inf < 0.05, `3d: the ∞ unravels on the way down (∞ weight ${top.inf.toFixed(2)} → ${mid.inf.toFixed(2)})`)
-  check(Math.abs(back.inf - top.inf) < 0.02 && Math.abs(back.camZ - top.camZ) < 0.02, '3d: scrolling back up returns the scene exactly to the hero')
+  const isInf = (d) => d.a === 1 && (d.mix < 0.02 || d.b === 1)
+  check(isInf(top) && !isInf(mid), `3d: the ∞ transforms on the way down (shape ${top.a} → ${mid.a})`)
+  check(isInf(back) && Math.abs(back.camZ - top.camZ) < 0.02, '3d: scrolling back up returns the scene exactly to the hero')
   check(errors.length === 0, `3d: no runtime errors ${errors.join(' | ')}`)
   await gl.close()
 }

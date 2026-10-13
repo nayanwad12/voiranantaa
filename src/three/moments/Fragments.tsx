@@ -29,31 +29,38 @@ function wavedPlane() {
 }
 
 function kindLook(kind: (typeof MATERIAL_KINDS)[number] | 'fabric', detail: number) {
-  const std = (o: THREE.MeshStandardMaterialParameters) =>
-    new THREE.MeshStandardMaterial({ transparent: true, side: THREE.DoubleSide, ...o })
+  // Physical materials with a thin-film sheen: each piece catches colour as it turns.
+  const mat = (o: THREE.MeshPhysicalMaterialParameters) =>
+    new THREE.MeshPhysicalMaterial({
+      transparent: true,
+      side: THREE.DoubleSide,
+      iridescence: 1,
+      iridescenceIOR: 1.5,
+      iridescenceThicknessRange: [120, 720],
+      ...o,
+    })
   switch (kind) {
     case 'paper':
-      return { geo: new THREE.PlaneGeometry(0.32, 0.44), mat: std({ color: '#EDE6D6', roughness: 0.95 }), scale: 1 }
+      return { geo: new THREE.PlaneGeometry(0.32, 0.44), mat: mat({ color: '#FFF4E0', roughness: 0.7, iridescence: 0.4 }) }
     case 'metal':
-      return { geo: new THREE.BoxGeometry(0.24, 0.24, 0.05), mat: std({ color: '#C4C7CC', metalness: 1, roughness: 0.25 }), scale: 1 }
+      return { geo: new THREE.BoxGeometry(0.24, 0.24, 0.05), mat: mat({ color: '#E6E9F0', metalness: 1, roughness: 0.15 }) }
     case 'wire':
-      return { geo: new THREE.TorusGeometry(0.17, 0.012, 6, detail ? 40 : 20), mat: std({ color: '#A6A8AB', metalness: 0.9, roughness: 0.3 }), scale: 1 }
+      return { geo: new THREE.TorusGeometry(0.17, 0.014, 6, detail ? 40 : 20), mat: mat({ color: '#FF8A4C', metalness: 1, roughness: 0.25 }) }
     case 'wood':
-      return { geo: new THREE.BoxGeometry(0.44, 0.07, 0.08), mat: std({ color: '#8A5A35', roughness: 0.8 }), scale: 1 }
+      return { geo: new THREE.BoxGeometry(0.44, 0.07, 0.08), mat: mat({ color: '#C77A3A', roughness: 0.5, iridescence: 0.5 }) }
     case 'natural':
-      return { geo: new THREE.IcosahedronGeometry(0.14, 0), mat: std({ color: '#6E7A4E', roughness: 0.9, flatShading: true }), scale: 1 }
+      return { geo: new THREE.IcosahedronGeometry(0.14, 0), mat: mat({ color: '#2BD67B', roughness: 0.4, flatShading: true }) }
     case 'recycled':
-      return { geo: new THREE.TetrahedronGeometry(0.17), mat: std({ color: '#5F7F8C', roughness: 0.55, metalness: 0.2 }), scale: 1 }
+      return { geo: new THREE.TetrahedronGeometry(0.17), mat: mat({ color: '#3A6BFF', metalness: 0.4, roughness: 0.3 }) }
     case 'fabric':
       return {
         geo: wavedPlane(),
-        mat: std({ color: '#F2EEE6', emissive: '#F2EEE6', emissiveIntensity: 0.45, roughness: 1 }),
-        scale: 1,
+        mat: mat({ color: '#FF3D8B', emissive: '#FF3D8B', emissiveIntensity: 0.6, roughness: 0.6, sheen: 1, sheenColor: '#FFB3D1' }),
       }
   }
 }
 
-type Piece = { mesh: THREE.InstancedMesh; mat: THREE.MeshStandardMaterial; ids: number[] }
+type Piece = { mesh: THREE.InstancedMesh; mat: THREE.MeshPhysicalMaterial; ids: number[] }
 
 export function Fragments({ detail }: { detail: number }) {
   const total = FRAGMENTS.unconventional + FRAGMENTS.fabric
@@ -106,27 +113,23 @@ export function Fragments({ detail }: { detail: number }) {
   const sc = useMemo(() => new THREE.Vector3(), [])
 
   useFrame(() => {
-    const { state, points, count, time, ctx } = live
-    const f = state[F.fragments]
+    const { cur, time, ctx } = live
+    const f = cur.s[F.fragments]
     const visible = f > 0.002
     for (const p of pieces) p.mesh.visible = visible
-    if (!visible || points.length < 6) return
+    if (!visible) return
     const e = f * f * (3 - 2 * f)
     // Portrait phones: a taller, narrower cloud of smaller pieces so the text stays readable.
     const sx = ctx.wide ? 1 : 0.36
     const sy = ctx.wide ? 1 : 1.35
     const size = ctx.wide ? 1 : 0.55
     for (const p of pieces) {
-      p.mat.opacity = Math.min(ctx.wide ? 1 : 0.8, f * 1.6)
+      p.mat.opacity = Math.min(ctx.wide ? 1 : 0.85, f * 1.6)
       p.ids.forEach((id, k) => {
-        // From a point on the thread (so it reads as the thread breaking apart) out to the cloud.
-        const x = along[id] * (count - 1)
-        const j = Math.min(count - 2, x | 0)
-        const fr = x - j
-        const a = j * 3
-        const fx = points[a] + (points[a + 3] - points[a]) * fr
-        const fy = points[a + 1] + (points[a + 4] - points[a + 1]) * fr
-        const fz = points[a + 2] + (points[a + 5] - points[a + 2]) * fr
+        // From a line of light (the thread breaking apart) out to the floating cloud.
+        const fx = (along[id] - 0.5) * 12 * ctx.fit
+        const fy = -0.4 + 0.22 * Math.sin(along[id] * 7)
+        const fz = 0
         const bob = Math.sin(time * 0.6 + id) * 0.08
         const tx = cloud[id * 3] * sx
         const ty = cloud[id * 3 + 1] * sy + bob

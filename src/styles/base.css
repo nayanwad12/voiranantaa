@@ -317,11 +317,31 @@ html.lenis body {
   z-index: 0;
   pointer-events: none;
 }
+/* Without WebGL this is the whole look: a slow aurora in the prologue's colours (kept deep for legibility). */
 .stage-backdrop {
-  background:
-    radial-gradient(70% 55% at 50% -12%, rgb(242 238 230 / 0.06), transparent 70%),
-    radial-gradient(55% 45% at 85% 105%, rgb(242 238 230 / 0.035), transparent 70%);
+  overflow: hidden;
+  background: linear-gradient(180deg, #07040f, #12081f 55%, #0a0512);
   transition: opacity 1.4s var(--ease-out-soft);
+}
+.stage-backdrop::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 35% at 25% 22%, rgb(255 61 139 / 0.17), transparent 70%),
+    radial-gradient(38% 32% at 80% 38%, rgb(45 225 252 / 0.11), transparent 70%),
+    radial-gradient(50% 42% at 55% 85%, rgb(124 92 255 / 0.2), transparent 70%);
+}
+/* Drift on the compositor (transform only) so it never repaints while scrolling. */
+@media (prefers-reduced-motion: no-preference) {
+  .stage-backdrop::before {
+    animation: aurora 40s ease-in-out infinite alternate;
+  }
+}
+@keyframes aurora {
+  to {
+    transform: translate3d(-7%, 5%, 0) scale(1.1) rotate(4deg);
+  }
 }
 .stage-canvas {
   height: 100lvh;
@@ -384,7 +404,7 @@ html[data-3d='ready'] main {
   right: -28vmin;
   width: 95vmin;
   height: 95vmin;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--rasa) 30%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rasa) 48%, transparent), transparent);
   pointer-events: none;
 }
 html[data-3d='ready'] .rasa-panels > li::before {

@@ -1,38 +1,39 @@
-import { SHAPE_NAMES, type ShapeName } from './thread/shapes'
+import { SHAPE_INDEX, type ShapeName } from './particles/shapes'
 
 /**
- * The whole scene is described by one flat numeric state: camera, colour, intensities,
- * which "moments" are visible, and a weight per thread shape. Keyframes are partial states;
- * scrolling interpolates between them, so every animation reverses exactly on scroll-up.
+ * The whole scene is described by one flat numeric state (camera, palette, background, effects,
+ * moments) plus the pair of particle shapes being morphed between. Keyframes are partial states
+ * placed along the page; the scroll position picks the two around it and interpolates, so every
+ * animation reverses exactly on scroll-up.
  */
 export const SCALARS = [
   'camX', 'camY', 'camZ', 'tgtX', 'tgtY', 'tgtZ',
-  'r', 'g', 'b', // thread / light colour (sRGB 0–1)
-  'glow', // ambient glow behind the thread (kept low so text contrast holds)
-  'thread', // thread opacity
-  'particles', // particle opacity
-  'bloom', // bloom strength (high tier)
-  'speed', // time scale of the thread's own motion
-  'flicker', // Bhayanaka's flicker
-  'fragments', // 04: the 100 fragments
-  'plinth', // 06: plinth + spotlight
-  'lights', // 08/13: the 20 points of light
-  'arc', // 13: lights arranged as a stage arc instead of two groups
-  'winners', // 08: the two category winners brighten
-  'beads', // 10: timeline beads
+  'ox', 'oy', 'oz', // where the particle sculpture sits
+  'c1r', 'c1g', 'c1b', 'c2r', 'c2g', 'c2b', 'c3r', 'c3g', 'c3b', // particle palette (3 stops)
+  'b1r', 'b1g', 'b1b', 'b2r', 'b2g', 'b2b', 'b3r', 'b3g', 'b3b', // aurora background (3 stops)
+  'size', // particle size
+  'glow', // particle brightness
+  'turb', // swirling currents
+  'speed', // time scale of the shapes' own motion
+  'bloom',
+  'mono', // 1 = colour drained to black and white (05 — made by human hands)
+  'flicker', // Bhayanaka
+  'fragments', // 04 — the 100 fragments
+  'plinth', // 06 — plinth + spotlight
+  'winners', // 08 — the two winners flare
+  'beads', // 10 — timeline beads
 ] as const
 export type Scalar = (typeof SCALARS)[number]
-
 export const F = Object.fromEntries(SCALARS.map((k, i) => [k, i])) as Record<Scalar, number>
-export const SHAPE_OFFSET = SCALARS.length
-export const STATE_LEN = SCALARS.length + SHAPE_NAMES.length
-export const shapeIndex = (n: ShapeName) => SHAPE_OFFSET + SHAPE_NAMES.indexOf(n)
 
+export type Palette = [string, string, string]
 export type Partial3D = Partial<Record<Scalar, number>> & {
   shape?: ShapeName
-  color?: string
+  colors?: Palette
+  bg?: Palette
   cam?: [number, number, number]
   tgt?: [number, number, number]
+  at?: [number, number, number]
 }
 
 const hex = (h: string) => {
@@ -40,44 +41,45 @@ const hex = (h: string) => {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
 }
 
-export function defaultState(): Float32Array {
-  const s = new Float32Array(STATE_LEN)
-  apply(s, {
+type Full = { s: Float32Array; shape: number }
+
+function base(): Full {
+  const f: Full = { s: new Float32Array(SCALARS.length), shape: SHAPE_INDEX.infinity }
+  apply(f, {
     cam: [0, 0, 8],
     tgt: [0, 0, 0],
-    color: '#F2EEE6',
-    glow: 0.028,
-    thread: 1,
-    particles: 1,
-    bloom: 0.7,
+    at: [0, 0, 0],
+    colors: ['#FFB347', '#FF3D8B', '#2DE1FC'],
+    bg: ['#07040F', '#1A0B2E', '#3A0F4A'],
+    size: 1,
+    glow: 1,
+    turb: 0.08,
     speed: 1,
-    shape: 'infinity',
+    bloom: 1.1,
   })
-  return s
+  return f
 }
 
-/** Write a partial keyframe onto a full state (carry-forward semantics). */
-export function apply(s: Float32Array, p: Partial3D) {
+function apply(f: Full, p: Partial3D) {
+  const s = f.s
   for (const k of SCALARS) if (p[k] !== undefined) s[F[k]] = p[k]!
-  if (p.cam) [s[F.camX], s[F.camY], s[F.camZ]] = p.cam
-  if (p.tgt) [s[F.tgtX], s[F.tgtY], s[F.tgtZ]] = p.tgt
-  if (p.color) [s[F.r], s[F.g], s[F.b]] = hex(p.color)
-  if (p.shape) {
-    s.fill(0, SHAPE_OFFSET)
-    s[shapeIndex(p.shape)] = 1
-  }
+  if (p.cam) s.set(p.cam, F.camX)
+  if (p.tgt) s.set(p.tgt, F.tgtX)
+  if (p.at) s.set(p.at, F.ox)
+  if (p.colors) p.colors.forEach((c, i) => s.set(hex(c), F.c1r + i * 3))
+  if (p.bg) p.bg.forEach((c, i) => s.set(hex(c), F.b1r + i * 3))
+  if (p.shape) f.shape = SHAPE_INDEX[p.shape]
 }
 
 /* ------------------------------------------------------------------------ */
 /* The scroll track                                                          */
 /* ------------------------------------------------------------------------ */
 
-type Stop = { pos: number; state: Float32Array }
+type Stop = { pos: number } & Full
 let track: Stop[] = []
 
 export type Measured = { key: string; start: number; end: number }
 
-/** Build the sorted list of keyframes in document scroll positions. */
 export function buildTrack(ranges: Measured[], keyframesFor: (key: string) => [number, Partial3D][] | undefined) {
   const raw: { pos: number; p: Partial3D }[] = []
   for (const r of ranges) {
@@ -86,52 +88,57 @@ export function buildTrack(ranges: Measured[], keyframesFor: (key: string) => [n
     for (const [at, p] of kfs) raw.push({ pos: r.start + at * (r.end - r.start), p })
   }
   raw.sort((a, b) => a.pos - b.pos)
-  let prev = defaultState()
+  let prev = base()
   track = raw.map(({ pos, p }) => {
-    const s = prev.slice()
-    apply(s, p)
-    prev = s
-    return { pos, state: s }
+    const f: Full = { s: prev.s.slice(), shape: prev.shape }
+    apply(f, p)
+    prev = f
+    return { pos, ...f }
   })
 }
 
 const ease = (x: number) => x * x * (3 - 2 * x)
 
-/** The target state for a scroll position. */
-export function resolve(scroll: number, out: Float32Array) {
+/** Resolve a scroll position into the live state: scalars, and the shape pair being morphed. */
+export function resolve(scroll: number, out: Current) {
   if (!track.length) return
-  if (scroll <= track[0].pos) return out.set(track[0].state)
-  const last = track[track.length - 1]
-  if (scroll >= last.pos) return out.set(last.state)
-  let lo = 0
-  let hi = track.length - 1
-  while (hi - lo > 1) {
-    const mid = (lo + hi) >> 1
-    if (track[mid].pos <= scroll) lo = mid
-    else hi = mid
+  let a = track[0]
+  let b = track[0]
+  let f = 0
+  if (scroll >= track[track.length - 1].pos) a = b = track[track.length - 1]
+  else if (scroll > track[0].pos) {
+    let lo = 0
+    let hi = track.length - 1
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1
+      if (track[mid].pos <= scroll) lo = mid
+      else hi = mid
+    }
+    a = track[lo]
+    b = track[hi]
+    f = ease((scroll - a.pos) / Math.max(1, b.pos - a.pos))
   }
-  const a = track[lo]
-  const b = track[hi]
-  const f = ease((scroll - a.pos) / Math.max(1, b.pos - a.pos))
-  for (let i = 0; i < STATE_LEN; i++) out[i] = a.state[i] + (b.state[i] - a.state[i]) * f
+  for (let i = 0; i < out.s.length; i++) out.s[i] = a.s[i] + (b.s[i] - a.s[i]) * f
+  out.a = a.shape
+  out.b = b.shape
+  out.mix = a.shape === b.shape ? 0 : f
 }
 
-/* ------------------------------------------------------------------------ */
-/* Live values shared by every 3D component each frame                       */
-/* ------------------------------------------------------------------------ */
+export type Current = { s: Float32Array; a: number; b: number; mix: number }
 
-/** Debug hook (?debug): inspect the track and live state from the console. */
-export const debugTrack = () => track.map((s) => ({ pos: Math.round(s.pos), fragments: s.state[F.fragments], plinth: s.state[F.plinth], lights: s.state[F.lights] }))
-
+/** Live values shared by every 3D component each frame (written by the Director). */
 export const live = {
-  state: defaultState(),
-  target: defaultState(),
+  cur: { s: base().s, a: SHAPE_INDEX.infinity, b: SHAPE_INDEX.infinity, mix: 0 } as Current,
+  /** Eased scroll position the scene follows (smooths native touch scrolling too). */
+  smooth: -1,
+  /** Scroll speed, 0–1, used to stir the particles. */
+  velocity: 0,
   time: 0,
+  /** 0 → 1 over the first seconds: the first note blooms into the ∞. */
+  intro: 0,
   ctx: { wide: true, fit: 1 },
-  /** Current thread points (xyz × count), written by the Director. */
-  points: new Float32Array(0),
-  count: 0,
-  /** 0 = open thread (ends fade), 1 = closed loop. */
-  closed: 1,
-  ready: false,
+  mouse: { x: 0, y: 0, z: 0, active: 0 },
 }
+
+/** Debug hook (?debug). */
+export const debugTrack = () => track.map((t) => ({ pos: Math.round(t.pos), shape: t.shape }))
