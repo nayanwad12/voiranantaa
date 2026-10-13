@@ -17,7 +17,7 @@ export function Participate() {
           <p data-reveal="lines" className="serif col-span-4 text-display uppercase md:col-span-11">
             {participate.statement}
           </p>
-          <p data-reveal="fade" className="col-span-4 text-lead text-paper/85 md:col-span-6">
+          <p data-reveal="fade" className="col-span-4 text-lead text-paper md:col-span-6">
             {participate.eligibility}
           </p>
         </div>

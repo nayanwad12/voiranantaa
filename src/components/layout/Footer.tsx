@@ -14,7 +14,7 @@ export function Footer() {
           <ul className="flex flex-col">
             {nav.map((item) => (
               <li key={item.href}>
-                <a href={item.href} className="label tap inline-flex items-center text-paper/75 transition-colors hover:text-paper">
+                <a href={item.href} className="label tap inline-flex items-center text-paper underline-offset-[6px] hover:underline">
                   {item.label}
                 </a>
               </li>
@@ -23,7 +23,7 @@ export function Footer() {
         </nav>
         <div className="col-span-4 flex flex-col items-start gap-6 md:col-span-4">
           <PartnerContact />
-          <a href="#top" className="label tap inline-flex items-center gap-3 text-paper/75 transition-colors hover:text-paper">
+          <a href="#top" className="label tap inline-flex items-center gap-3 text-paper underline-offset-[6px] hover:underline">
             Back to top
             <svg aria-hidden="true" viewBox="0 0 10 16" className="h-4 w-2.5">
               <path d="M5 16V2M1 6l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.2" />

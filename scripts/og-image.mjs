@@ -18,7 +18,7 @@ body{width:1200px;height:630px;background:#0a0a0a;color:#f2eee6;font-family:Inte
 svg{position:absolute;left:50%;top:52%;width:1100px;transform:translate(-50%,-50%);opacity:.32}
 .wrap{position:absolute;inset:56px 64px;display:flex;flex-direction:column;justify-content:space-between}
 .row{display:flex;justify-content:space-between;font-size:15px;letter-spacing:.24em;font-weight:500}
-.muted{color:#8c8880}
+.muted{color:#d6d1c8}
 h1{font-family:IS;font-weight:400;font-size:168px;line-height:.86;letter-spacing:-.01em}
 h1 span{display:block;padding-left:1.6em}
 .tag{font-family:ISI;font-size:38px}

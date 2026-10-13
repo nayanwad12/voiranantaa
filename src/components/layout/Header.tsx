@@ -52,7 +52,7 @@ export function Header() {
                       href={item.href}
                       aria-current={current ? 'location' : undefined}
                       className={`tap group relative inline-flex items-center px-3 text-label uppercase tracking-[0.2em] transition-colors hover:text-paper ${
-                        current ? 'text-paper' : 'text-paper/70'
+                        current ? 'text-paper' : 'text-paper'
                       }`}
                     >
                       {item.label}

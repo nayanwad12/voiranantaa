@@ -63,7 +63,7 @@ export function Experience() {
 
         <div data-ring-wrap className="col-span-4 flex flex-col gap-8 sm:flex-row sm:items-center md:col-span-12 md:gap-14">
           <TimerRing label={experience.timer} className="w-44 shrink-0 sm:w-52 lg:w-64" />
-          <p data-reveal="fade" className="max-w-[34rem] text-lead text-paper/85">
+          <p data-reveal="fade" className="max-w-[34rem] text-lead text-paper">
             {experience.minutes.before}
             <strong className="font-medium text-paper">{experience.minutes.emphasis}</strong>
             {experience.minutes.after}
@@ -89,7 +89,7 @@ export function Experience() {
               </li>
             ))}
           </ol>
-          <p data-reveal="fade" className="mt-8 text-lead text-paper/85">
+          <p data-reveal="fade" className="mt-8 text-lead text-paper">
             {experience.closing}
           </p>
         </div>

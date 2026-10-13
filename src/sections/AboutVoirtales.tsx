@@ -17,7 +17,7 @@ export function AboutVoirtales() {
         </p>
         <div
           data-reveal="stagger"
-          className="col-span-4 space-y-6 text-lead text-paper/85 md:col-span-4 md:col-start-9 md:self-end"
+          className="col-span-4 space-y-6 text-lead text-paper md:col-span-4 md:col-start-9 md:self-end"
         >
           {aboutVoirtales.body.map((p) => (
             <p key={p}>{p}</p>

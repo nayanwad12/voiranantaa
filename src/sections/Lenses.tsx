@@ -35,7 +35,7 @@ export function Lenses() {
     <Section id="lenses" scene="lenses" labelledBy="lenses-title">
       <div className="container-x section-y">
         <SectionHeader number={lenses.number} title={lenses.title} id="lenses-title" />
-        <p data-reveal="fade" className="mt-8 max-w-[34rem] text-lead text-paper/85 lg:hidden">
+        <p data-reveal="fade" className="mt-8 max-w-[34rem] text-lead text-paper lg:hidden">
           {lenses.intro}
         </p>
 
@@ -48,7 +48,7 @@ export function Lenses() {
           />
           <p
             data-lens-intro
-            className="absolute top-1/2 left-1/2 hidden w-[22rem] -translate-x-1/2 -translate-y-1/2 text-center text-lead text-paper/85 lg:block"
+            className="absolute top-1/2 left-1/2 hidden w-[22rem] -translate-x-1/2 -translate-y-1/2 text-center text-lead text-paper lg:block"
           >
             {lenses.intro}
           </p>
@@ -68,7 +68,7 @@ export function Lenses() {
                 >
                   <span className="label text-muted">{String(i + 1).padStart(2, '0')}</span>
                   <h3 className="serif text-heading">{lens.name}</h3>
-                  <p className="text-body text-paper/85">{lens.question}</p>
+                  <p className="text-body text-paper">{lens.question}</p>
                 </li>
               )
             })}

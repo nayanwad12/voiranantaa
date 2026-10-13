@@ -58,7 +58,7 @@ export function Hero() {
         </div>
 
         <div className="flex items-end justify-between gap-6">
-          <p className="hero-fade max-w-[22rem] [animation-delay:0.95s] text-lead text-paper/85">{hero.intro}</p>
+          <p className="hero-fade max-w-[22rem] [animation-delay:0.95s] text-lead text-paper">{hero.intro}</p>
           <a
             href="#about"
             className="hero-fade tap group [animation-delay:1.05s] flex shrink-0 flex-col items-center gap-3 text-muted transition-colors hover:text-paper"

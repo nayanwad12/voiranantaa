@@ -6,7 +6,7 @@ export function PartnerContact({ className = '' }: { className?: string }) {
     return (
       <span
         data-placeholder="PARTNER_EMAIL"
-        className={`label inline-flex min-h-[44px] items-center border border-dashed border-paper/50 px-4 text-paper/80 ${className}`}
+        className={`label inline-flex min-h-[44px] items-center border border-dashed border-paper/50 px-4 text-paper ${className}`}
       >
         [ PARTNER_EMAIL ]
       </span>

@@ -54,7 +54,7 @@ export function HumanHands() {
           {humanHands.statement}
         </p>
 
-        <p data-reveal="fade" className="col-span-4 text-lead text-paper/85 md:col-span-5">
+        <p data-reveal="fade" className="col-span-4 text-lead text-paper md:col-span-5">
           {humanHands.body}
         </p>
 

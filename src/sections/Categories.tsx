@@ -52,7 +52,7 @@ function CategoryCard({ cat }: { cat: Category }) {
       <h3 id={`cat-${cat.key}`} data-reveal="lines" className="serif text-title">
         {cat.name}
       </h3>
-      <p data-reveal="fade" className="max-w-[32rem] text-lead text-paper/85">
+      <p data-reveal="fade" className="max-w-[32rem] text-lead text-paper">
         {cat.description}
       </p>
 

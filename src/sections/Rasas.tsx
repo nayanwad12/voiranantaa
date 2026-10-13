@@ -69,13 +69,13 @@ export function Rasas() {
             id="rasas-title"
             titleClassName="text-display"
           />
-          <p data-reveal="fade" className="serif mt-5 text-subheading italic text-paper/90">
+          <p data-reveal="fade" className="serif mt-5 text-subheading italic text-paper">
             {firstEdition.subtitle}
           </p>
         </div>
         <div
           data-reveal="stagger"
-          className="col-span-4 space-y-6 text-lead text-paper/85 md:col-span-5 md:col-start-8 md:self-end"
+          className="col-span-4 space-y-6 text-lead text-paper md:col-span-5 md:col-start-8 md:self-end"
         >
           {firstEdition.body.map((p) => (
             <p key={p}>{p}</p>
@@ -107,7 +107,7 @@ export function Rasas() {
                     </span>
                   </p>
                   <h3 className="serif mt-5 text-[clamp(3.25rem,1rem+10vw,11.5rem)] leading-[0.86] uppercase">{rasa.name}</h3>
-                  <p className="serif mt-4 text-[clamp(1.5rem,1.1rem+1.6vw,2.75rem)] italic text-paper/90">{rasa.meaning}</p>
+                  <p className="serif mt-4 text-[clamp(1.5rem,1.1rem+1.6vw,2.75rem)] italic text-paper">{rasa.meaning}</p>
                 </div>
               </li>
             ))}

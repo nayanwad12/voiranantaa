@@ -17,7 +17,7 @@ export function Develop() {
           {develop.intro}
         </p>
         <Accordion items={develop.items} />
-        <p data-reveal="fade" className="mt-10 max-w-[40rem] text-lead text-paper/85">
+        <p data-reveal="fade" className="mt-10 max-w-[40rem] text-lead text-paper">
           {develop.closing}
         </p>
       </div>

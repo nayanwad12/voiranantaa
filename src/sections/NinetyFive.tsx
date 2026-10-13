@@ -95,7 +95,7 @@ export function NinetyFive() {
         </div>
 
         <div className="col-span-4 space-y-8 md:col-span-6 md:col-start-7">
-          <p data-reveal="fade" className="text-lead text-paper/85">
+          <p data-reveal="fade" className="text-lead text-paper">
             {ninetyFive.body}
           </p>
           <div>

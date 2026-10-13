@@ -8,7 +8,7 @@
   --color-ink: #0a0a0a;
   --color-ink-soft: #111110;
   --color-paper: #f2eee6;
-  --color-muted: #8c8880;
+  --color-muted: #d6d1c8; /* secondary text: a soft white, clearly readable on ink */
   --color-hairline: rgb(242 238 230 / 0.12);
   --color-hairline-strong: rgb(242 238 230 / 0.22);
 

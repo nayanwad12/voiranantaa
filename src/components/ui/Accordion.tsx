@@ -18,7 +18,7 @@ export function Accordion({ items }: { items: readonly Item[] }) {
             <li key={item.name} className="grid grid-cols-12 items-baseline gap-6 border-b border-hairline py-7">
               <span className="col-span-1">{num}</span>
               <h3 className="serif col-span-6 text-heading">{item.name}</h3>
-              <p className="col-span-5 text-lead text-paper/85">{item.question}</p>
+              <p className="col-span-5 text-lead text-paper">{item.question}</p>
             </li>
           )
         }
@@ -45,7 +45,7 @@ export function Accordion({ items }: { items: readonly Item[] }) {
               </button>
             </h3>
             <div id={panelId} role="region" aria-labelledby={btnId} hidden={!expanded} className="pb-6 pl-11">
-              <p className="text-lead text-paper/85">{item.question}</p>
+              <p className="text-lead text-paper">{item.question}</p>
             </div>
           </li>
         )

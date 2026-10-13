@@ -14,7 +14,7 @@ export function Judges() {
         </p>
 
         <div className="col-span-4 md:col-span-6">
-          <p data-reveal="fade" className="text-lead text-paper/85">
+          <p data-reveal="fade" className="text-lead text-paper">
             {judges.intro}
           </p>
           <TagList items={judges.fields} size="md" className="mt-6" />

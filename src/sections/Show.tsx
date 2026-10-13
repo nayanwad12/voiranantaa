@@ -27,7 +27,7 @@ export function Show() {
         </div>
 
         <div className="mt-14 grid-editorial gap-y-6 md:mt-20">
-          <p data-reveal="fade" className="col-span-4 text-lead text-paper/85 md:col-span-6 md:col-start-4">
+          <p data-reveal="fade" className="col-span-4 text-lead text-paper md:col-span-6 md:col-start-4">
             {show.body}
           </p>
           <p data-reveal="fade" className="label col-span-4 text-paper md:col-span-6 md:col-start-4">

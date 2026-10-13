@@ -8,7 +8,7 @@ export function TagList({ items, className = '', size = 'sm' }: Props) {
       {items.map((item) => (
         <li
           key={item}
-          className={`border border-hairline-strong uppercase tracking-[0.16em] text-paper/90 ${pad}`}
+          className={`border border-hairline-strong uppercase tracking-[0.16em] text-paper ${pad}`}
         >
           {item}
         </li>
