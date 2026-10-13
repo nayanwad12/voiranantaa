@@ -3,6 +3,7 @@ import { journey } from '../content/site'
 import { Section } from '../components/ui/Section'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { gsap, MOTION_OK, REVERSIBLE, useGSAP } from '../motion/gsap'
+import { whenNear } from '../motion/arm'
 
 export function Journey() {
   const list = useRef<HTMLOListElement>(null)
@@ -10,20 +11,37 @@ export function Journey() {
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-      mm.add(MOTION_OK, () => {
-        // The thread is drawn down the timeline by the scroll.
-        gsap.from('[data-journey-line]', {
-          scaleY: 0,
-          ease: 'none',
-          scrollTrigger: { trigger: list.current, start: 'top 70%', end: 'bottom 60%', scrub: 0.4 },
-        })
-        // Each date is a bead of light that switches on as the visitor passes it.
-        gsap.utils.toArray<HTMLElement>('[data-journey-step]').forEach((step) => {
-          const st = { trigger: step, start: 'top 70%', toggleActions: REVERSIBLE }
-          gsap.from(step.querySelector('[data-bead]'), { scale: 0.2, opacity: 0.2, duration: 0.6, ease: 'back.out(3)', scrollTrigger: st })
-          gsap.from(step.querySelectorAll('[data-step-text]'), { opacity: 0, x: 18, duration: 0.9, stagger: 0.08, scrollTrigger: st })
-        })
-      })
+      // Set up in idle time once the section is near (keeps page load light on phones).
+      mm.add(MOTION_OK, (context) =>
+        whenNear(list.current!, () =>
+          context.add(() => {
+            // The thread is drawn down the timeline by the scroll.
+            gsap.from('[data-journey-line]', {
+              scaleY: 0,
+              ease: 'none',
+              scrollTrigger: { trigger: list.current, start: 'top 70%', end: 'bottom 60%', scrub: 0.4 },
+            })
+            // Each date is a bead of light that switches on as the visitor passes it.
+            gsap.utils.toArray<HTMLElement>('[data-journey-step]').forEach((step) => {
+              const st = { trigger: step, start: 'top 70%', toggleActions: REVERSIBLE }
+              gsap.from(step.querySelector('[data-bead]'), {
+                scale: 0.2,
+                opacity: 0.2,
+                duration: 0.6,
+                ease: 'back.out(3)',
+                scrollTrigger: st,
+              })
+              gsap.from(step.querySelectorAll('[data-step-text]'), {
+                opacity: 0,
+                x: 18,
+                duration: 0.9,
+                stagger: 0.08,
+                scrollTrigger: st,
+              })
+            })
+          }),
+        ),
+      )
       return () => mm.revert()
     },
     { scope: list },
@@ -42,7 +60,11 @@ export function Journey() {
             className="absolute top-2 bottom-2 left-[5px] w-px origin-top bg-gradient-to-b from-paper/0 via-paper/40 to-paper/0 md:left-[calc(33.333%+5px)]"
           />
           {journey.steps.map((step) => (
-            <li key={step.date} data-journey-step className="relative grid gap-2 py-7 pl-10 md:grid-cols-3 md:gap-10 md:py-9 md:pl-0">
+            <li
+              key={step.date}
+              data-journey-step
+              className="relative grid gap-2 py-7 pl-10 md:grid-cols-3 md:gap-10 md:py-9 md:pl-0"
+            >
               <span
                 data-bead
                 aria-hidden="true"

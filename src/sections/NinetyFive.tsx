@@ -4,6 +4,7 @@ import { SectionHeader } from '../components/ui/SectionHeader'
 import { TagList } from '../components/ui/TagList'
 import { useRef } from 'react'
 import { gsap, MOTION_OK, REVERSIBLE, useGSAP } from '../motion/gsap'
+import { whenNear } from '../motion/arm'
 
 const TOTAL = FRAGMENTS.unconventional + FRAGMENTS.fabric
 
@@ -13,20 +14,29 @@ function FragmentGrid() {
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-      mm.add(MOTION_OK, () => {
-        // 95 fragments gather from scattered positions; the 5 fabric pieces settle last.
-        const tl = gsap.timeline({ scrollTrigger: { trigger: ref.current, start: 'top 80%', toggleActions: REVERSIBLE } })
-        tl.from('[data-cell="material"]', {
-          opacity: 0,
-          scale: 0.2,
-          x: () => gsap.utils.random(-40, 40),
-          y: () => gsap.utils.random(-40, 40),
-          rotate: () => gsap.utils.random(-90, 90),
-          duration: 1,
-          ease: 'expo.out',
-          stagger: { each: 0.01, from: 'random' },
-        }).from('[data-cell="fabric"]', { opacity: 0, scale: 0, duration: 1.2, ease: 'elastic.out(1, 0.6)', stagger: 0.08 }, '-=0.4')
-      })
+      // Set up in idle time once the section is near (keeps page load light on phones).
+      mm.add(MOTION_OK, (context) =>
+        whenNear(ref.current!, () =>
+          context.add(() => {
+            // 95 fragments gather from scattered positions; the 5 fabric pieces settle last.
+            const tl = gsap.timeline({ scrollTrigger: { trigger: ref.current, start: 'top 80%', toggleActions: REVERSIBLE } })
+            tl.from('[data-cell="material"]', {
+              opacity: 0,
+              scale: 0.2,
+              x: () => gsap.utils.random(-40, 40),
+              y: () => gsap.utils.random(-40, 40),
+              rotate: () => gsap.utils.random(-90, 90),
+              duration: 1,
+              ease: 'expo.out',
+              stagger: { each: 0.01, from: 'random' },
+            }).from(
+              '[data-cell="fabric"]',
+              { opacity: 0, scale: 0, duration: 1.2, ease: 'elastic.out(1, 0.6)', stagger: 0.08 },
+              '-=0.4',
+            )
+          }),
+        ),
+      )
       return () => mm.revert()
     },
     { scope: ref },
@@ -60,7 +70,12 @@ export function NinetyFive() {
   return (
     <Section id="material" scene="ninety-five" labelledBy="ninety-five-title">
       <div className="container-x section-y grid-editorial gap-y-14">
-        <SectionHeader number={ninetyFive.number} title={ninetyFive.title} id="ninety-five-title" className="col-span-4 md:col-span-12" />
+        <SectionHeader
+          number={ninetyFive.number}
+          title={ninetyFive.title}
+          id="ninety-five-title"
+          className="col-span-4 md:col-span-12"
+        />
 
         <dl data-reveal="stagger" className="col-span-4 grid grid-cols-[auto_1fr] items-end gap-x-6 gap-y-8 md:col-span-6">
           {ninetyFive.split.map((s) => (
@@ -80,16 +95,24 @@ export function NinetyFive() {
         </div>
 
         <div className="col-span-4 space-y-8 md:col-span-6 md:col-start-7">
-          <p data-reveal="fade" className="text-lead text-paper/85">{ninetyFive.body}</p>
+          <p data-reveal="fade" className="text-lead text-paper/85">
+            {ninetyFive.body}
+          </p>
           <div>
-            <p data-reveal="fade" className="label mb-4 text-muted">{ninetyFive.materialsIntro}</p>
+            <p data-reveal="fade" className="label mb-4 text-muted">
+              {ninetyFive.materialsIntro}
+            </p>
             <TagList items={ninetyFive.materials} />
           </div>
         </div>
 
         <div className="col-span-4 md:col-span-12 md:pt-16">
-          <p data-reveal="lines" className="serif text-display uppercase">{ninetyFive.statement}</p>
-          <p data-reveal="fade" className="mt-6 text-lead text-muted italic">{ninetyFive.statementNote}</p>
+          <p data-reveal="lines" className="serif text-display uppercase">
+            {ninetyFive.statement}
+          </p>
+          <p data-reveal="fade" className="mt-6 text-lead text-muted italic">
+            {ninetyFive.statementNote}
+          </p>
         </div>
       </div>
     </Section>

@@ -9,10 +9,12 @@ export function SiteMotion() {
     const stopLenis = initLenis()
     const stopAnchors = installAnchorHandling()
     // Line breaks change when the web fonts arrive; re-measure every trigger once they have.
-    // Triggers were created top-down per component; sort so the rasa pin is accounted for first.
-    ScrollTrigger.sort()
-    ScrollTrigger.refresh()
-    document.fonts?.ready.then(() => ScrollTrigger.refresh())
+    // Line breaks change when the web fonts arrive; re-measure every trigger once they have.
+    // (Sorting first makes sure the rasa pin is accounted for before anything below it.)
+    document.fonts?.ready.then(() => {
+      ScrollTrigger.sort()
+      ScrollTrigger.refresh()
+    })
     return () => {
       stopAnchors()
       stopLenis()
@@ -23,7 +25,7 @@ export function SiteMotion() {
     const main = document.getElementById('main')
     if (!main) return
     const mm = gsap.matchMedia()
-    mm.add(MOTION_OK, () => setupReveals(main))
+    mm.add(MOTION_OK, (context) => setupReveals(main, context))
     return () => mm.revert()
   })
 

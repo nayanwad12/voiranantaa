@@ -73,7 +73,10 @@ export function Rasas() {
             {firstEdition.subtitle}
           </p>
         </div>
-        <div data-reveal="stagger" className="col-span-4 space-y-6 text-lead text-paper/85 md:col-span-5 md:col-start-8 md:self-end">
+        <div
+          data-reveal="stagger"
+          className="col-span-4 space-y-6 text-lead text-paper/85 md:col-span-5 md:col-start-8 md:self-end"
+        >
           {firstEdition.body.map((p) => (
             <p key={p}>{p}</p>
           ))}
@@ -87,7 +90,9 @@ export function Rasas() {
         data-scene-end={pin ? 'bottom bottom' : undefined}
       >
         <div ref={stage} className={pin ? 'rasa-stage' : ''}>
-          <div className={`container-x ${pin ? 'absolute inset-x-0 top-[calc(var(--header-h)+var(--safe-top)+2.5rem)] z-10' : ''}`}>
+          <div
+            className={`container-x ${pin ? 'absolute inset-x-0 top-[calc(var(--header-h)+var(--safe-top)+2.5rem)] z-10' : ''}`}
+          >
             <p className="label border-b border-hairline pb-6 text-muted">{firstEdition.rasasIntro}</p>
           </div>
 

@@ -67,7 +67,12 @@ function CategoryCard({ cat }: { cat: Category }) {
           {categories.focusLabel}
           <svg aria-hidden="true" viewBox="0 0 12 12" className="h-3 w-3">
             <path d="M0 6h12" stroke="currentColor" strokeWidth="1" />
-            <path d="M6 0v12" stroke="currentColor" strokeWidth="1" className={`origin-center transition-transform duration-500 ${open ? 'scale-y-0' : ''}`} />
+            <path
+              d="M6 0v12"
+              stroke="currentColor"
+              strokeWidth="1"
+              className={`origin-center transition-transform duration-500 ${open ? 'scale-y-0' : ''}`}
+            />
           </svg>
         </button>
         <div id={panelId} className="focus-panel">

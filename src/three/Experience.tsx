@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import type { BloomEffect } from 'postprocessing'
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { gsap } from '../motion/gsap'
@@ -13,6 +11,8 @@ import { Thread } from './thread/Thread'
 import { Fragments } from './moments/Fragments'
 import { Plinth } from './moments/Plinth'
 import { FinalistLights, TimelineBeads } from './moments/Points'
+
+const Effects = lazy(() => import('./Effects'))
 
 type Props = { tier: Exclude<Tier, 'fallback'>; onReady: () => void }
 
@@ -45,7 +45,11 @@ export default function Experience({ tier, onReady }: Props) {
       <Plinth />
       <FinalistLights />
       <TimelineBeads />
-      {cfg.bloom && <Effects />}
+      {cfg.bloom && (
+        <Suspense fallback={null}>
+          <Effects />
+        </Suspense>
+      )}
       <Driver onReady={onReady} />
       <Watchdog />
     </Canvas>
@@ -76,18 +80,6 @@ function Lights() {
       <directionalLight position={[3, 4, 5]} intensity={1.4} />
       <pointLight ref={rim} position={[-4, 1, -2]} intensity={6} decay={1} distance={14} />
     </>
-  )
-}
-
-function Effects() {
-  const bloom = useRef<BloomEffect>(null)
-  useFrame(() => {
-    if (bloom.current) bloom.current.intensity = live.state[F.bloom]
-  })
-  return (
-    <EffectComposer multisampling={4}>
-      <Bloom ref={bloom} mipmapBlur luminanceThreshold={0.28} luminanceSmoothing={0.3} intensity={0.7} radius={0.55} />
-    </EffectComposer>
   )
 }
 
